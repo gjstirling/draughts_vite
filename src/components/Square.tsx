@@ -6,15 +6,11 @@ interface SquareProps {
 }
 
 const Square: React.FC<SquareProps> = ({ coordinates, checker }) => {
-    const squareStyle: React.CSSProperties = {
-        position: 'relative',
-        width: '50px',
-        height: '50px',
-        backgroundColor: setSquareColour(coordinates) ? 'dimgrey' : 'whitesmoke',
-    };
+    const squareColour = setSquareColour(coordinates)
+        ? { backgroundColor: 'dimgrey' } : { backgroundColor: 'whitesmoke'}
 
     return (
-        <button style={squareStyle}>
+        <button style={squareColour}>
             {checker && <Checker colour={checker} />}
         </button>
     );
