@@ -1,6 +1,6 @@
 import React from 'react';
 import Square from "./Square";
-import { emptyBoard, initialBoard } from "../utils";
+import {initialBoard} from "../utils";
 
 function Board() {
     return (

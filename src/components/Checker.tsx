@@ -1,8 +1,10 @@
-import redChecker from '../../public/images/red.png';
-import blueChecker from '../../public/images/blue.png';
-
-function Checker({ colour }) {
-    return <img src={colour === "red" ? redChecker : blueChecker} alt={colour}/>;
+interface CheckerProps {
+    colour: string;
 }
 
-export default Checker
+const Checker: React.FC<CheckerProps> = ({ colour }) => {
+    return <div className="checker" style={{ backgroundColor: colour }}></div>;
+};
+
+export default Checker;
+

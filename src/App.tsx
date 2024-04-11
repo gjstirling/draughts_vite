@@ -5,7 +5,8 @@ function App() {
 
   return (
    <>
-    <Board/>
+       <h1> (Message board: Let the game begin) </h1>
+       <><Board/></>
    </>
   )
 }
