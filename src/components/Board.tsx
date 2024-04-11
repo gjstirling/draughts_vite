@@ -11,6 +11,7 @@ function Board() {
                         {row.map((_, cellIndex) => {
                             return (
                                 <Square
+                                    key={`${rowIndex}-${cellIndex}`}
                                     coordinates={[rowIndex, cellIndex]}
                                     checker={initialBoard[rowIndex][cellIndex]}
                                 />
