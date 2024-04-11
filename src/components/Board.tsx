@@ -1,17 +1,18 @@
 import React from 'react';
 import Square from "./Square";
-import { emptyBoard } from "../utils";
+import { emptyBoard, initialBoard } from "../utils";
 
 function Board() {
     return (
         <>
             <div>
-                {emptyBoard.map((row, rowIndex) => (
+                {initialBoard.map((row, rowIndex) => (
                     <div className="board-row" key={rowIndex}>
                         {row.map((_, cellIndex) => {
                             return (
                                 <Square
-                                    value={[rowIndex, cellIndex]}
+                                    coordinates={[rowIndex, cellIndex]}
+                                    checker={initialBoard[rowIndex][cellIndex]}
                                 />
                             );
                         })}
