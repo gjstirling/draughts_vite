@@ -1,16 +1,18 @@
-import React from 'react';
+import React, {Dispatch} from 'react';
 
 interface CheckerProps {
     colour: string;
     selected?: boolean; // Define selected prop as optional
+    onClick: VoidFunction;
 }
 
-const Checker: React.FC<CheckerProps> = ({ colour, selected }) => {
+const Checker = ({ colour, selected, onClick }: CheckerProps): JSX.Element => {
+
     return (
         <div className="checker" style={{
             backgroundColor: colour,
-            ...(selected ? { filter: 'brightness(500%)' } : {}) // Apply style conditionally
-        }}></div>
+            ...(selected ? { filter: 'brightness(20%)' } : {})
+        }} onClick={onClick}></div>
     );
 };
 

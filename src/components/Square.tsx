@@ -1,18 +1,23 @@
 import Checker from './Checker';
+import {Dispatch} from "react";
 
 interface SquareProps {
     coordinates: [number, number];
     checker?: string;
     isSelected: boolean;
+    onCheckerSelected: Dispatch<[number, number]>
 }
 
-const Square: React.FC<SquareProps> = ({ coordinates, checker, isSelected }) => {
-    const squareColour = setSquareColour(coordinates)
-        ? { backgroundColor: 'dimgrey' } : { backgroundColor: 'whitesmoke'}
+const Square: React.FC<SquareProps> = ({ coordinates, checker, isSelected , onCheckerSelected}) => {
+    const squareColour = setSquareColour(coordinates) ? { backgroundColor: 'dimgrey' } : { backgroundColor: 'whitesmoke'}
+
+    function handleClick() {
+        onCheckerSelected(coordinates)
+    }
 
     return (
         <button style={squareColour}>
-            {checker && <Checker colour={checker} selected={isSelected}/>}
+            {checker && <Checker colour={checker} selected={isSelected} onSelected={onCheckerSelected} onClick={handleClick}/>}
         </button>
     );
 };
