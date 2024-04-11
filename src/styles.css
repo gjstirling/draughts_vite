@@ -1,0 +1,12 @@
+.button {
+    border-radius: 0px;
+    border: 1px;
+    border-style: solid;
+    padding: 1.5em 2em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: dimgrey;
+    cursor: pointer;
+    transition: border-color 0.25s;
+}
