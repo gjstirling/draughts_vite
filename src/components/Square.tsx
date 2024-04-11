@@ -3,15 +3,16 @@ import Checker from './Checker';
 interface SquareProps {
     coordinates: [number, number];
     checker?: string;
+    isSelected: boolean;
 }
 
-const Square: React.FC<SquareProps> = ({ coordinates, checker }) => {
+const Square: React.FC<SquareProps> = ({ coordinates, checker, isSelected }) => {
     const squareColour = setSquareColour(coordinates)
         ? { backgroundColor: 'dimgrey' } : { backgroundColor: 'whitesmoke'}
 
     return (
         <button style={squareColour}>
-            {checker && <Checker colour={checker} />}
+            {checker && <Checker colour={checker} selected={isSelected}/>}
         </button>
     );
 };

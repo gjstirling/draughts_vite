@@ -3,6 +3,9 @@ import Square from "./Square";
 import {initialBoard} from "../utils";
 
 function Board() {
+
+    const selectedChecker = [0,3]
+
     return (
         <>
             <div>
@@ -14,6 +17,7 @@ function Board() {
                                     key={`${rowIndex}-${cellIndex}`}
                                     coordinates={[rowIndex, cellIndex]}
                                     checker={initialBoard[rowIndex][cellIndex]}
+                                    isSelected={selectedChecker[0] === rowIndex &&  selectedChecker[1] === cellIndex}
                                 />
                             );
                         })}
