@@ -1,35 +1,35 @@
 import Checker from './Checker';
-import {Dispatch} from "react";
 
 type coordinates = [number, number]
+// type board = string[][] | null[][]
 
 interface SquareProps {
     coordinates: coordinates;
     checker?: string;
     isSelected: boolean;
-    onCheckerSelected: Dispatch<coordinates>;
+    onCheckerSelected: (coordinates: coordinates) => void;
+    moveAction: (move: coordinates) => void; // Update prop type
 }
 
-const Square: React.FC<SquareProps> = ({ coordinates, checker, isSelected , onCheckerSelected}) => {
+const Square: React.FC<SquareProps> = ({ coordinates, checker, isSelected , onCheckerSelected, moveAction}) => {
     const squareColour = setSquareColour(coordinates) ? { backgroundColor: 'dimgrey' } : { backgroundColor: 'whitesmoke'}
 
     function handleCheckerClick() {
         console.log("Clicked on checker:     " + coordinates)
-        onCheckerSelected(coordinates)
+        onCheckerSelected(coordinates); // Call onCheckerSelected function with coordinates
     }
 
     function handleSquareClick() {
         if (checker) console.log("checker on square")
         else {
             console.log("Clicked on Square:     " + coordinates)
+            moveAction(coordinates)
         }
     }
 
-
-
     return (
         <button style={squareColour} onClick={handleSquareClick}>
-            {checker && <Checker colour={checker} selected={isSelected} onSelected={onCheckerSelected} onClick={handleCheckerClick}/>}
+            {checker && <Checker colour={checker} selected={isSelected} onClick={handleCheckerClick}/>}
         </button>
     );
 };

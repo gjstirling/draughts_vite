@@ -1,5 +1,3 @@
-import React, {Dispatch} from 'react';
-
 interface CheckerProps {
     colour: string;
     selected?: boolean; // Define selected prop as optional

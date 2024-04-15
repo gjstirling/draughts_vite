@@ -1,14 +1,33 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import Square from "./Square";
 import {initialBoard} from "../utils";
 
-type coordinates = [number, number]
-
 function Board() {
 
-    const [board] = useState(initialBoard)
-    const [selectedChecker, setSelectedChecker] = useState([null,null])
+    type coordinates = [number, number]
+    type board = string[][] | null[][]
 
+    const [board, setBoard] = useState(initialBoard)
+    const [selectedChecker, setSelectedChecker] = useState<coordinates>([0, 0]);
+
+    function moveChecker(start: coordinates, finish: coordinates, board: board) {
+        const newBoard = board.map(row => [...row]);
+
+        // Move the checker to the finish position
+        newBoard[finish[0]][finish[1]] = newBoard[start[0]][start[1]];
+        newBoard[start[0]][start[1]] = null;
+
+        setBoard(newBoard)
+
+        return newBoard
+    }
+
+    function moveAction(move: coordinates) {
+        if (selectedChecker[0] === 0 && selectedChecker[1] === 0) return board
+        else {
+            return moveChecker(selectedChecker, move, board as board)
+        }
+    }
 
     return (
         <>
@@ -22,9 +41,10 @@ function Board() {
                                 <Square
                                     key={`${rowIndex}-${cellIndex}`}
                                     coordinates={[rowIndex, cellIndex]}
-                                    checker={initialBoard[rowIndex][cellIndex]}
+                                    checker={board[rowIndex][cellIndex] || ""}
                                     isSelected={findSelected}
-                                    onCheckerSelected={setSelectedChecker}
+                                    onCheckerSelected={(coordinates) => setSelectedChecker(coordinates)}
+                                    moveAction={moveAction}
                                 />
                             );
                         })}
@@ -34,16 +54,5 @@ function Board() {
         </>
     );
 }
-
-function moveChecker(start: coordinates, finish: coordinates, board: (string | null)[][]) {
-    const newBoard = board.map(row => [...row]);
-
-    // Move the checker to the finish position
-    newBoard[finish[0]][finish[1]] = newBoard[start[0]][start[1]];
-    newBoard[start[0]][start[1]] = null;
-
-    return newBoard
-}
-
 
 export default Board;
