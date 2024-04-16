@@ -13,7 +13,6 @@ function Board() {
     function moveChecker(start: coordinates, finish: coordinates, board: board) {
         const newBoard = board.map(row => [...row]);
 
-        // Move the checker to the finish position
         newBoard[finish[0]][finish[1]] = newBoard[start[0]][start[1]];
         newBoard[start[0]][start[1]] = null;
 
