@@ -12,7 +12,9 @@ interface SquareProps {
 }
 
 const Square: React.FC<SquareProps> = ({ coordinates, checker, isSelected , onCheckerSelected, moveAction}) => {
+
     const squareColour = setSquareColour(coordinates) ? { backgroundColor: 'dimgrey' } : { backgroundColor: 'whitesmoke'}
+    const squareTestId = `square-${coordinates[0]}-${coordinates[1]}`;
 
     function handleCheckerClick() {
         console.log("Clicked on checker:     " + coordinates)
@@ -28,7 +30,7 @@ const Square: React.FC<SquareProps> = ({ coordinates, checker, isSelected , onCh
     }
 
     return (
-        <button style={squareColour} onClick={handleSquareClick}>
+        <button style={squareColour} onClick={handleSquareClick} data-testid={squareTestId}>
             {checker && <Checker colour={checker} selected={isSelected} onClick={handleCheckerClick}/>}
         </button>
     );
