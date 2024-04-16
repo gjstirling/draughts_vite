@@ -3,7 +3,7 @@
   line-height: 1.5;
   font-weight: 400;
 
-  background-color: whitesmoke;
+  background-color: black;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -11,16 +11,27 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.heading {
+  color: white;
+}
+
 body {
+  justify-content: center;
   margin: 0;
   display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
 
 button {
-  border-radius: 0px;
+  border-radius: 0;
   border: 1px;
   border-style: solid;
   padding: 2.25em 2.25em;
