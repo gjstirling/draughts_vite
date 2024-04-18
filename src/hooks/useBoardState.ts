@@ -14,23 +14,15 @@ export const initialBoard: BoardLayout = [
     ["red", null, "red", null, "red", null, "red", null]
 ]
 
-function isMovingOneSpaceOnly(){
-    return true;
-}
+
 
 export function useBoardState() {
 
     const [board, setBoard] = useState<BoardLayout>(initialBoard)
     const [selectedChecker, setSelectedChecker] = useState<Coordinates | null>(null);
+    const [turn, setTurn] = useState(true)
 
     function moveChecker(start: Coordinates, finish: Coordinates) {
-
-        // rule - can only move if square + 1(x) + 1(y) && isEmpty
-        if(!isMovingOneSpaceOnly()) return;
-        
-
-        // rule - can take is square 1(x) + 1(y) && 2(x) + 2(y) isEmpty
-
         const newBoard = board.map(row => [...row]);
 
         newBoard[finish[0]][finish[1]] = newBoard[start[0]][start[1]];
@@ -43,11 +35,21 @@ export function useBoardState() {
 
 
     function moveAction(move: Coordinates) {
-        if (selectedChecker) {
-            return moveChecker(selectedChecker, move)
-        } else {
-            return board
+        const isWhiteSquare = (move[0] + move[1]) % 2 === 0
+        // turn based play if turn is true it is red, if false it is blue
+        if (!selectedChecker) return board;
+        if(isWhiteSquare) return board;
+
+        const checkerColour = board[selectedChecker[0]][selectedChecker[1]];
+        const isRedTurn = turn && checkerColour === "red";
+        const isBlueTurn = !turn && checkerColour === "blue";
+
+        if (isRedTurn || isBlueTurn) {
+            setTurn(!turn);
+            return moveChecker(selectedChecker, move);
         }
+
+        return board;
     }
 
     return {

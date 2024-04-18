@@ -2,13 +2,12 @@ import Square from "./Square";
 import { useBoardState } from "../hooks/useBoardState";
 
 function Board() {
-  const { board, moveAction, selectedChecker, setSelectedChecker } =
-    useBoardState();
+  const { board, moveAction, selectedChecker, setSelectedChecker, turn } = useBoardState();
 
   return (
     <>
-      <div>
-        {board.map((row, rowIndex) => (
+        <div>
+            {board.map((row, rowIndex) => (
           <div className="board-row" key={rowIndex}>
             {row.map((_, cellIndex) => {
               const isSelected =
