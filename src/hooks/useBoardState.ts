@@ -57,6 +57,6 @@ export function useBoardState() {
         selectedChecker,
         moveAction,
         setSelectedChecker,
-        turn
+        turn, setTurn
     }
 }

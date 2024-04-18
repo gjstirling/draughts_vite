@@ -11,12 +11,23 @@ describe("Move Action: ", () => {
         expect(result.current.moveAction([4,3])[4][3]).toBe(null)
     });
 
-    test('Can authorise a red checker to be moved on the board when selected', () => {
+    test('Does nothing when trying to move to a white square', () => {
         const { result } = renderHook(() => useBoardState());
         act(() => {
             result.current.setSelectedChecker([5,2])
-            result.current.moveAction([4,3])
+            result.current.moveAction([4,2])
         });
+        expect(result.current.moveAction([4,2])[4][2]).toBe(null)
+    });
+
+    test('Can authorise a red checker to be moved on the board when selected', () => {
+        // These tests need adjusting to assert if moveChecker has been called with given arguments
+        const { result } = renderHook(() => useBoardState());
+        act(() => {
+            result.current.setSelectedChecker([5,2])
+        });
+
+        // assert moveChecker was called with params [3,2] and [4,3]
         expect(result.current.moveAction([4,3])[4][3]).toBe("red")
     });
 
