@@ -2,7 +2,7 @@ import Square from "./Square";
 import { useBoardState } from "../hooks/useBoardState";
 
 function Board() {
-  const { board, moveAction, selectedChecker, setSelectedChecker, turn } = useBoardState();
+  const { board, moveAction, selectedChecker, setSelectedChecker, setTurn, turn } = useBoardState();
 
   return (
     <>
