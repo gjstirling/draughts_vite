@@ -50,10 +50,12 @@ function calcNewBoard(
 ) {
   const newBoard = board.map((row) => [...row]);
 
-  newBoard[finish[0]][finish[1]] = newBoard[start[0]][start[1]];
-  newBoard[start[0]][start[1]] = null;
-
-  return newBoard;
+  if(start) {
+    newBoard[finish[0]][finish[1]] = newBoard[start[0]][start[1]];
+    newBoard[start[0]][start[1]] = null;
+    return newBoard;
+  } else 
+    return board
 }
 
 export function useBoardState() {
