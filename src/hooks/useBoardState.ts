@@ -43,19 +43,18 @@ export function canMove(
  *  Calculates the new board based on the coordinate the checker is trying to move to.
  * It does not care about whether it is a legal move
  */
-function calcNewBoard(
+export function calcNewBoard(
   start: Coordinates | null,
   finish: Coordinates,
   board: BoardLayout
 ) {
   const newBoard = board.map((row) => [...row]);
 
-  if(start) {
+  if (start) {
     newBoard[finish[0]][finish[1]] = newBoard[start[0]][start[1]];
     newBoard[start[0]][start[1]] = null;
     return newBoard;
-  } else 
-    return board
+  } else return board;
 }
 
 export function useBoardState() {
@@ -65,15 +64,14 @@ export function useBoardState() {
   );
   const [turn, setTurn] = useState(true);
 
-  function moveAction(target: Coordinates) {
-    // Check move is legal canMove(coor1)
+  function moveAction(target: Coordinates): void {
     const res = canMove(selectedChecker, target, board, turn);
-
     if (!res) return;
 
+    // Set new board layout and flips turn
     setBoard((board) => calcNewBoard(selectedChecker, target, board));
-
     setTurn(!turn);
+    return;
   }
 
   return {
