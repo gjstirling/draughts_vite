@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import {canMove, initialBoard, calcNewBoard} from "../useBoardState";
+import {authoriseMove, initialBoard, calcNewBoard, getMoves} from "../useBoardState";
 
 type BoardLayout = (string | null)[][];
 
@@ -14,75 +14,105 @@ const testBoard: BoardLayout = [
     ["red", null, "red", null, "red", null, "red", null],
   ];
 
-describe("canMove: ", () => {
+
+describe("authoriseMove: ", () => {
     // true cases:
     test('Returns true when red checker is selected and target is correct', () => {
-        const result = canMove([5,2], [4,3], initialBoard, true)
+        const result = authoriseMove([5,2], [4,3], initialBoard, true)
         
         expect(result).toBe(true)
     }); 
 
     test('Returns true when blue checker is selected and target is correct', () => {
-        const result = canMove([2,3], [3,2], initialBoard, false)
+        const result = authoriseMove([2,3], [3,2], initialBoard, false)
         
         expect(result).toBe(true)
     }); 
 
     // in [progress]
     test('Returns true when red checker is selected, target is two moves away and there is a blue checker in path', () => {
-        const result = canMove([4,1], [2,3], testBoard, false)
+        const result = authoriseMove([4,1], [2,3], testBoard, true)
         
         expect(result).toBe(true)
     }); 
     
     // False cases
-    test('Returns false when no checker is selected', () => {
-        const result = canMove(null, [4,3], initialBoard, true)
-        
-        expect(result).toBe(false)
-    });
-
     test('Returns false when target is a white square', () => {
-        const result = canMove([5,2], [4,4], initialBoard, true)
+        const result = authoriseMove([5,2], [4,4], initialBoard, true)
         
         expect(result).toBe(false)
     });
 
     test('Returns false when turn is true && blue checker is selected', () => {
-        const result = canMove([2,3], [3,2], initialBoard, true)
+        const result = authoriseMove([2,3], [3,2], initialBoard, true)
         
         expect(result).toBe(false)
     });
 
     test('Returns false when turn is false && red checker is selected', () => {
-        const result = canMove([5,2], [4,3], initialBoard, false)
+        const result = authoriseMove([5,2], [4,3], initialBoard, false)
         
         expect(result).toBe(false)
     });
 
-    test('Returns false when red chekcer target is two rows away', () => {
-        const result = canMove([5,2], [3,4], initialBoard, true)
-        
-        expect(result).toBe(false)
-    }); 
-
-    test('Returns false when blue checker target is two rows away', () => {
-        const result = canMove([2,3], [4,1], initialBoard, false)
-        
-        expect(result).toBe(false)
-    }); 
-
     test('Returns false on red turn when target has a blue checker in path', () => {
-        const result = canMove([4,1], [3,2], testBoard, false)
+        const result = authoriseMove([4,1], [3,2], testBoard, false)
         
         expect(result).toBe(false)
     }); 
 
     test('Returns false on blue turn when target has a red checker in path', () => {
-        const result = canMove([3,2], [4,1], testBoard, true)
+        const result = authoriseMove([3,2], [4,1], testBoard, true)
         
         expect(result).toBe(false)
     }); 
+
+    test('Returns false when target is three rows away or more', () => {
+        const result = authoriseMove([6,1], [3,4], testBoard, true)
+        
+        expect(result).toBe(false)
+    }); 
+
+});
+
+describe("getMoves: ", () => {
+    // SINGLE SQUARE MOVES
+    test('Returns true when one right side diagonal square away', () => {
+        const result= getMoves([5,0], [4,1], initialBoard)
+
+        expect(result).toBe(true)
+    }); 
+
+    test('Returns true when Red checker has one left side diagonal square away', () => {
+        const result= getMoves([5,2], [4,1], initialBoard)
+
+        expect(result).toBe(true)
+    }); 
+
+    test('Returns true when Blue checker has one left side diagonal square away', () => {
+        const result= getMoves([2,1], [3,0], initialBoard)
+
+        expect(result).toBe(true)
+    });
+
+    test('Returns true when Blue checker has one right side diagonal square away', () => {
+        const result= getMoves([2,1], [3,2], initialBoard)
+
+        expect(result).toBe(true)
+    });
+
+    // DOUBLE SQUARE MOVES
+    test('Returns true when Red checker has blue checker in between its target', () => {
+        const result= getMoves([4,1], [2,3], testBoard)
+
+        expect(result).toBe(true)
+    });
+
+    test('Returns false when Red checker has no blue checker in between its target', () => {
+        const result= getMoves([5,2], [3,4], initialBoard)
+
+        expect(result).toBe(false)
+    });
 });
 
 describe("calcNewBoard: ", () => {
@@ -92,9 +122,9 @@ describe("calcNewBoard: ", () => {
         expect(result[4][3]).toBe("red")
     }); 
 
-    test('No update when no checker selected', () => {
-        const result = calcNewBoard(null, [4,3], initialBoard)
+    test('Can return an updated board when a checker has been taken', () => {
+        const result = calcNewBoard([4,1], [2,3], testBoard)
         
-        expect(result).toBe(initialBoard)
+        expect(result[3][2]).toBe(null)
     }); 
 });
