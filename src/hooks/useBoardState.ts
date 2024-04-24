@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { ServerHMRConnector } from "vite";
 
 type Coordinates = [number, number];
 type BoardLayout = (string | null)[][];
@@ -43,25 +42,45 @@ export function canMove(
   }
 }
 
-export function checkForDouble(target: Coordinates, board: BoardLayout, turn: boolean, oldPosition: Coordinates) 
-{
-  if(Math.abs(oldPosition[0] - target[0]) !== 2) return false
+export function checkForDouble(
+  target: Coordinates,
+  board: BoardLayout,
+  turn: boolean,
+  oldPosition: Coordinates
+) {
+  if (Math.abs(oldPosition[0] - target[0]) !== 2) return false;
 
-  if(target[0] < 2 || target[0] > 5) return false
+  if (target[0] < 2 || target[0] > 5) return false;
 
   // blue
-  if ((board[target[0] + 1][target[1] + 1]) && !turn && (!board[target[0] + 2][target[1] + 2])) {
+  if (
+    board[target[0] + 1][target[1] + 1] &&
+    !turn &&
+    !board[target[0] + 2][target[1] + 2]
+  ) {
     return true;
   }
-  if ((board[target[0] + 1][target[1] - 1]) && !turn && (!board[target[0] + 2][target[1] - 2]))  {
+  if (
+    board[target[0] + 1][target[1] - 1] &&
+    !turn &&
+    !board[target[0] + 2][target[1] - 2]
+  ) {
     return true;
   }
   // red
-  if ((board[target[0] - 1][target[1] - 1]) && turn && (!board[target[0] - 2][target[1] - 2])) {
+  if (
+    board[target[0] - 1][target[1] - 1] &&
+    turn &&
+    !board[target[0] - 2][target[1] - 2]
+  ) {
     return true;
   }
 
-  if ((board[target[0] - 1][target[1] + 1]) && turn && (!board[target[0] - 2][target[1] + 2])) {
+  if (
+    board[target[0] - 1][target[1] + 1] &&
+    turn &&
+    !board[target[0] - 2][target[1] + 2]
+  ) {
     return true;
   }
 
@@ -74,6 +93,9 @@ export function checkBaseRules(
   board: BoardLayout,
   turn: boolean
 ) {
+  const checker = board[selectedChecker[0]][selectedChecker[1]]
+  if(!checker) return false;
+
   // Rules
   const isWhiteSquare = (target[0] + target[1]) % 2 === 0;
   if (isWhiteSquare) return false;
@@ -81,17 +103,18 @@ export function checkBaseRules(
   // Can only move a max of two diagonal spaces
   if (Math.abs(selectedChecker[0] - target[0]) > 2) return false;
   if (Math.abs(selectedChecker[1] - target[1]) > 2) return false;
-  
-  // Can only move diagonally "forward"
-  if (selectedChecker[0] - target[0] === 0) return false;
-  if (selectedChecker[1] - target[1] === 0) return false;
-  if (selectedChecker[0] < target[0] && turn) return false;
-  if (target[0] < selectedChecker[0] && !turn) return false;
 
-  // check for correct turn
-  const checkerColour = board[selectedChecker[0]][selectedChecker[1]];
-  const moveMatchesTurn =
-    (turn && checkerColour === "red") || (!turn && checkerColour === "blue");
+  const isUpperCase = (str: string) => str === str.toUpperCase();
+  if (!isUpperCase(checker)) {
+    // Can only move diagonally "forward"
+    if (selectedChecker[0] - target[0] === 0) return false;
+    if (selectedChecker[1] - target[1] === 0) return false;
+    if (selectedChecker[0] < target[0] && turn) return false;
+    if (target[0] < selectedChecker[0] && !turn) return false;
+  }
+
+  // check for correct turn;
+  const moveMatchesTurn = (turn && checker.toLowerCase() === "red") || (!turn && checker.toLowerCase() === "blue")
   return moveMatchesTurn;
 }
 
@@ -122,16 +145,27 @@ export function calcNewBoard(
     newBoard[y][x] = null;
   }
 
+  const checker = newBoard[finish[0]][finish[1]]
+
+  // make checkers kings 
+  if(finish[0] === 0 && checker === "red"){
+    newBoard[finish[0]][finish[1]] = "RED"
+  }
+
+  if(finish[0] === (newBoard.length - 1) && checker === "red"){
+    newBoard[finish[0]][finish[1]] = "RED"
+  }
+
+  newBoard[finish[0]][finish[1]] 
   return newBoard;
 }
 
 export function useBoardState() {
   const [board, setBoard] = useState<BoardLayout>(initialBoard);
-  const [selectedChecker, setSelectedCheckerState] = useState<Coordinates | null>(
-    null
-  );
+  const [selectedChecker, setSelectedCheckerState] =
+    useState<Coordinates | null>(null);
   const [turn, setTurn] = useState(true);
-  const [doubleTurn, setDoubleTurn] = useState(false)
+  const [doubleTurn, setDoubleTurn] = useState(false);
 
   function moveAction(target: Coordinates): void {
     // guard for no checker selected, basic rules
@@ -146,26 +180,26 @@ export function useBoardState() {
     // Set new board layout and flips turn
     setBoard((board) => calcNewBoard(selectedChecker, target, board));
 
-    const secondTurn = checkForDouble(target, board, turn, selectedChecker)
-    
-    if(secondTurn){
-      setDoubleTurn(true)
-      console.log("Another move?       " + secondTurn)
-      setSelectedCheckerState(target)
+    const secondTurn = checkForDouble(target, board, turn, selectedChecker);
+
+    if (secondTurn) {
+      setDoubleTurn(true);
+      console.log("Another move?       " + secondTurn);
+      setSelectedCheckerState(target);
       return;
     }
 
-    setDoubleTurn(false)
+    setDoubleTurn(false);
     setTurn(!turn);
     return;
   }
 
   function setSelectedChecker(coordinates: Coordinates) {
-    if(doubleTurn){
-      console.log("ANother move needs to happen")
+    if (doubleTurn) {
+      console.log("ANother move needs to happen");
       return;
     }
- 
+
     setSelectedCheckerState(coordinates);
   }
 
