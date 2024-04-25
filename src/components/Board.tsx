@@ -4,9 +4,15 @@ import { useBoardState } from "../hooks/useBoardState";
 function Board() {
   const { board, moveAction, selectedChecker, setSelectedChecker, turn } = useBoardState();
 
+  if(board.length === 1) return <div style={{ color: 'white' }}>
+      <h1>GAME OVER </h1>
+      <h3>{turn ? "red" : "blue"} checker player has won the game</h3>
+  </div>
+
   return (
     <>
         <div>
+            <h1 className="heading">Message board: Let the game begin</h1>
             <h3 className={"heading"}> {turn ? "red" : "blue"} checkers turn</h3>
         </div>
         <div>
