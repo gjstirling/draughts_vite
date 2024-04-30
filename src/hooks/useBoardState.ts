@@ -18,7 +18,7 @@ export const initialBoard: BoardLayout = [
   ["red", null, "red", null, "red", null, "red", null],
 ];
 
-export function canMove(checker: Coordinates, target: Coordinates, board: BoardLayout) {
+export function canMove(checker: Coordinates, target: Coordinates, board: BoardLayout, isSecondTurn: boolean) {
   const [checkerY, checkerX] = checker;
   const [targetY, targetX] = target;
   const deltaY = targetY - checkerY;
@@ -26,7 +26,7 @@ export function canMove(checker: Coordinates, target: Coordinates, board: BoardL
 
   const isSingleMove = Math.abs(deltaY) === 1 && Math.abs(deltaX) === 1;
   if (isSingleMove) {
-    return board[targetY][targetX] === null;
+    return board[targetY][targetX] === null && !isSecondTurn;
   }
 
   const isDoubleMove = Math.abs(deltaY) === 2 && Math.abs(deltaX) === 2;

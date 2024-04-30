@@ -1,12 +1,22 @@
 import { describe, expect, test } from "vitest";
 import {checkBaseRules, initialBoard, calcNewBoard, canMove, checkForSecondTurn} from "../useBoardState";
-import {emptyBoard} from "./testBoards";
 
 type BoardLayout = (string | null)[][];
 const redChecker = "red"
 const redKing = "RED"
 const blueChecker = "blue"
 const blueKing = "BLUE"
+
+const emptyBoard: BoardLayout = [
+    [null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null],
+  ];
 
 describe("checkBaseRules: ", () => {
     // true cases:
@@ -27,8 +37,8 @@ describe("checkBaseRules: ", () => {
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
-            [null, null, "blue", null, null, null, null, null],
-            [null, "red", null, null, null, null, null, null],
+            [null, null, blueChecker, null, null, null, null, null],
+            [null, redChecker, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
@@ -44,8 +54,8 @@ describe("checkBaseRules: ", () => {
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
-            [null, null, "blue", null, null, null, null, null],
-            [null, "red", null, null, null, null, null, null],
+            [null, null, blueChecker, null, null, null, null, null],
+            [null, redChecker, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
@@ -60,8 +70,8 @@ describe("checkBaseRules: ", () => {
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
-            [null, null, "blue", null, null, null, null, null],
-            [null, "RED", null, null, null, null, null, null],
+            [null, null, blueChecker, null, null, null, null, null],
+            [null, redKing, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
@@ -111,7 +121,7 @@ describe("checkBaseRules: ", () => {
 
 describe("canMove: ", () => {
     test('Returns true when red checker is moving one diagonal square away', () => {
-        const result= canMove([5,0], [4,1], initialBoard)
+        const result= canMove([5,0], [4,1], initialBoard, false)
 
         expect(result).toBe(true)
     }); 
@@ -119,15 +129,15 @@ describe("canMove: ", () => {
     test('Returns false when square is occupied by a checker', () => {
         const board = [
             [null, null, null, null, null, null, null, null],
-            [null, null, "red", null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
-            [null, null, "blue", null, null, null, null, null],
-            [null, "red", null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, blueChecker, null, null, null, null, null],
+            [null, redChecker, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
           ]
-        const result= canMove([4,1], [3,2], board)
+        const result= canMove([4,1], [3,2], board, false)
 
         expect(result).toBe(false)
     });
@@ -135,10 +145,10 @@ describe("canMove: ", () => {
     test('Returns true when making a double move with checker inbetween', () => {
         const board = [
             [null, null, null, null, null, null, null, null],
-            [null, null, "red", null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
-            [null, null, "blue", null, null, null, null, null],
-            [null, "red", null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, blueChecker, null, null, null, null, null],
+            [null, redChecker, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
@@ -151,15 +161,15 @@ describe("canMove: ", () => {
     test('Returns false when trying to jump two spaces', () => {
         const board = [
             [null, null, null, null, null, null, null, null],
-            [null, null, "red", null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
-            [null, null, "blue", null, null, null, null, null],
-            [null, "red", null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, blueChecker, null, null, null, null, null],
+            [null, redChecker, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
           ]
-        const result= canMove([3,2], [5,4], board)
+        const result= canMove([3,2], [5,4], board, false)
 
         expect(result).toBe(false)
     });
@@ -169,16 +179,35 @@ describe("canMove: ", () => {
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
-            [null, null, null, null, "BLUE", null, null, null],
-            [null, null, null, "blue", null, "blue", null, null],
+            [null, null, null, null, blueKing, null, null, null],
+            [null, null, null, blueChecker, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
           ]
-        const result = canMove([3,4], [5,2], board)
+        const result = canMove([3,4], [5,2], board, false)
         
         expect(result).toBe(false)
     });
+
+    // second turn logic
+    test('Returns false when trying to move one space while secondTurn is true', () => {
+        const board = [
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, blueChecker, null, null, null, null],
+            [null, null, redChecker, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+          ]
+        const result = canMove([4,3], [5,4], board, true)
+        
+        expect(result).toBe(false)
+    });
+
+
 });
 
 describe("calcNewBoard: ", () => {
