@@ -2,16 +2,32 @@ import Square from "./Square";
 import { useBoardState } from "../hooks/useBoardState";
 
 function Board() {
-  const { board, moveAction, selectedChecker, setSelectedChecker, turn } = useBoardState();
+  const {
+    board,
+    moveAction,
+    selectedChecker,
+    setSelectedChecker,
+    turn,
+    isGameOver,
+  } = useBoardState();
+
+  if(isGameOver)
+    { return (
+      <div>
+        <h1 className="heading">
+          The {turn ? "Red" : "Blue"} player has won the game !!!!
+        </h1>
+      </div>
+    )}
 
   return (
     <>
-        <div>
-            <h1 className="heading">Message board: Let the game begin</h1>
-            <h3 className={"heading"}> {turn ? "red" : "blue"} checkers turn</h3>
-        </div>
-        <div>
-            {board.map((row, rowIndex) => (
+      <div>
+        <h1 className="heading">REACT Checkers</h1>
+        <h3 className={"heading"}> {turn ? "red" : "blue"} checkers turn</h3>
+      </div>
+      <div>
+        {board.map((row, rowIndex) => (
           <div className="board-row" key={rowIndex}>
             {row.map((_, cellIndex) => {
               const isSelected =

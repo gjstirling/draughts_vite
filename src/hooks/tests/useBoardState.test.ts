@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import {checkBaseRules, initialBoard, calcNewBoard, canMove, checkForSecondTurn} from "../useBoardState";
+import {checkBaseRules, calcNewBoard, canMove, checkForSecondTurn, gameOver} from "../useBoardState";
 
 type BoardLayout = (string | null)[][];
 const redChecker = "red"
@@ -16,6 +16,17 @@ const emptyBoard: BoardLayout = [
     [null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
+  ];
+
+  export const initialBoard: BoardLayout = [
+    [null, "blue", null, "blue", null, "blue", null, "blue"],
+    ["blue", null, "blue", null, "blue", null, "blue", null],
+    [null, "blue", null, "blue", null, "blue", null, "blue"],
+    [null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null],
+    ["red", null, "red", null, "red", null, "red", null],
+    [null, "red", null, "red", null, "red", null, "red"],
+    ["red", null, "red", null, "red", null, "red", null],
   ];
 
 describe("checkBaseRules: ", () => {
@@ -142,6 +153,22 @@ describe("canMove: ", () => {
         expect(result).toBe(false)
     });
 
+    test('Returns false when blue checker is blocked from moving', () => {
+        const board: BoardLayout = [
+            [blueChecker, null, null, null, null, null, null, null],
+            [null, redChecker, null, null, null, null, null, null],
+            [null, null, redChecker, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+          ];
+        const result = canMove([0,0], [2,2], board, false)
+        
+        expect(result).toBe(false)
+    });
+
     test('Returns true when making a double move with checker inbetween', () => {
         const board = [
             [null, null, null, null, null, null, null, null],
@@ -206,8 +233,6 @@ describe("canMove: ", () => {
         
         expect(result).toBe(false)
     });
-
-
 });
 
 describe("calcNewBoard: ", () => {
@@ -234,11 +259,6 @@ describe("calcNewBoard: ", () => {
     }); 
 });
 
-// checkForSecondTurn(
-//     target: Coordinates,
-//     board: BoardLayout,
-//     oldPosition: Coordinates
-//   )
 describe("checkForSecondTurn", () => {
     test('returns false if last turn was a single diagonal move', () => {
         const act = checkForSecondTurn([4,1], emptyBoard, [3,0])
@@ -403,5 +423,77 @@ test('returns FALSE if blue king lands and has a red checker behind it but targe
 
 
 });
+
+describe("gameOver:  ", () => {
+
+    test('returns true if no blue checkers remain after a red turn', () => {
+        const redTurn = true
+        const board: BoardLayout = [
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, "red", null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+          ];
+        const act = gameOver(board, redTurn)
+        
+        expect(act).toBe(true)
+    }); 
+
+    test('returns true if no blue checkers cannot move', () => {
+        const endOfRedTurn = true
+        const board: BoardLayout = [
+            [null, null, null, null, null, null, null, blueChecker],
+            [null, null, null, null, null, null, redChecker, null],
+            [null, null, null, null, null, redChecker, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+          ];
+
+        const act = gameOver(board, endOfRedTurn)        
+        expect(act).toBe(true)
+    }); 
+
+    test('returns true if no red checkers remain after a red turn', () => {
+        const blueTurn = false
+        const board: BoardLayout = [
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, "blue", null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+          ];
+        const act = gameOver(board, blueTurn)
+        
+        expect(act).toBe(true)
+    }); 
+
+    test('returns true if no red checkers cannot move', () => {
+        const blueTurn = false
+        const board: BoardLayout = [
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, blueChecker, null, null, null, null, null],
+            [null, blueChecker, null, null, null, null, null, null],
+            [redChecker, null, null, null, null, null, null, null],
+          ];
+
+        const act = gameOver(board, blueTurn)        
+        expect(act).toBe(true)
+    }); 
+
+})
 
 

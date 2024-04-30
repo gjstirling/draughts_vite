@@ -2,27 +2,36 @@ import { useState } from "react";
 
 type Coordinates = [number, number];
 type BoardLayout = (string | null)[][];
-const redChecker = "red"
-const redKing = "RED"
-const blueChecker = "blue"
-const blueKing = "BLUE"
+const redChecker = "red";
+const redKing = "RED";
+const blueChecker = "blue";
+const blueKing = "BLUE";
 
 export const initialBoard: BoardLayout = [
-  [null, "blue", null, "blue", null, "blue", null, "blue"],
-  ["blue", null, "blue", null, "blue", null, "blue", null],
-  [null, "blue", null, "blue", null, "blue", null, "blue"],
   [null, null, null, null, null, null, null, null],
   [null, null, null, null, null, null, null, null],
-  ["red", null, "red", null, "red", null, "red", null],
-  [null, "red", null, "red", null, "red", null, "red"],
-  ["red", null, "red", null, "red", null, "red", null],
+  [null, null, null, null, null, null, null, null],
+  [null, null, null, null, null, null, null, null],
+  [null, null, null, blueChecker, null, null, null, null],
+  [null, null, null, null, null, null, null, null],
+  [null, blueChecker, null, null, null, null, null, null],
+  [redChecker, null, null, null, null, null, null, null],
 ];
 
-export function canMove(checker: Coordinates, target: Coordinates, board: BoardLayout, isSecondTurn: boolean) {
+export function canMove(
+  checker: Coordinates,
+  target: Coordinates,
+  board: BoardLayout,
+  isSecondTurn: boolean
+) {
   const [checkerY, checkerX] = checker;
   const [targetY, targetX] = target;
   const deltaY = targetY - checkerY;
   const deltaX = targetX - checkerX;
+
+  if (targetY < 0 || targetY > board.length - 1) return false;
+  if (target[1] < 0 || target[1] > board.length - 1) return false;
+  if (board[targetY][targetX] !== null) return false;
 
   const isSingleMove = Math.abs(deltaY) === 1 && Math.abs(deltaX) === 1;
   if (isSingleMove) {
@@ -53,21 +62,6 @@ export function checkForSecondTurn(
   if (Math.abs(oldPosition[0] - target[0]) !== 2) return false;
   if (target[0] < 2 || target[0] > 5) return false;
 
-  // console.log("CASE:    " + canTakeAgain(target, board,-1, 1))
-
-  if (
-    canTakeAgain(target, board, 1, 1) ||
-    canTakeAgain(target, board, 1, -1) ||
-    canTakeAgain(target, board,-1, 1) ||
-    canTakeAgain(target, board, -1, -1)
-  ){
-    return true;
-  }
-  return false;
-}
-
-
-  // This is used to make sure the move is legal (contains logic for assesing that)
   function canTakeAgain(
     checkerPosition: Coordinates,
     board: BoardLayout,
@@ -75,23 +69,29 @@ export function checkForSecondTurn(
     dx: number
   ) {
     const [y, x] = checkerPosition;
-    const nextX = x + dx;
-    const nextY = y + dy;
-    const jumpX = x + 2 * dx;
-    const jumpY = y + 2 * dy;
-    const nextSquare = board[nextY][nextX]
-    const targetSquare = board[jumpY][jumpX]
-    const checker = board[y][x]
+    const nextSquare = board[y + dy][x + dx];
+    const targetSquare = board[y + 2 * dy][x + 2 * dx];
+    const checker = board[checkerPosition[0]][checkerPosition[1]];
 
-    // RULES
-    if(nextSquare === null || targetSquare !== null || checker === null) return false
-    if(checker === "red" && dy === 1) return false 
-    if(checker === "blue" && dy === -1) return false 
-    if(checker.toLowerCase() === nextSquare.toLowerCase()) return false
+    if (nextSquare === null || targetSquare !== null || checker === null)
+      return false;
+    if (checker === "red" && dy === 1) return false;
+    if (checker === "blue" && dy === -1) return false;
+    if (checker.toLowerCase() === nextSquare.toLowerCase()) return false;
 
     return true;
   }
 
+  if (
+    canTakeAgain(target, board, 1, 1) ||
+    canTakeAgain(target, board, 1, -1) ||
+    canTakeAgain(target, board, -1, 1) ||
+    canTakeAgain(target, board, -1, -1)
+  ) {
+    return true;
+  }
+  return false;
+}
 export function checkBaseRules(
   selectedChecker: Coordinates,
   target: Coordinates,
@@ -100,21 +100,24 @@ export function checkBaseRules(
 ) {
   const checker = board[selectedChecker[0]][selectedChecker[1]];
   if (!checker) return false;
-
   // Rules
-  const isWhiteSquare = (target[0] + target[1]) % 2 === 0;
-  if (isWhiteSquare) return false;
-
+  const targetIsWhiteSquare = (target[0] + target[1]) % 2 === 0;
+  if (targetIsWhiteSquare) return false;
   // check for correct turn;
-  const doesNotMatchTurn = (!turn && checker.toLowerCase() === "red") ||(turn && checker.toLowerCase() === "blue");
-  if(doesNotMatchTurn) return false;
+  const doesNotMatchTurn =
+    (!turn && checker.toLowerCase() === "red") ||
+    (turn && checker.toLowerCase() === "blue");
+  if (doesNotMatchTurn) return false;
 
   // Can only move a max of two diagonal spaces
-  if (Math.abs(selectedChecker[0] - target[0]) > 2) return false;
-  if (Math.abs(selectedChecker[1] - target[1]) > 2) return false;
+  if (
+    Math.abs(selectedChecker[0] - target[0]) > 2 ||
+    Math.abs(selectedChecker[1] - target[1]) > 2
+  )
+    return false;
 
-  const isUpperCase = (str: string) => str === str.toUpperCase();
-  if (!isUpperCase(checker)) {
+  const isKing = (str: string) => str === str.toUpperCase();
+  if (!isKing(checker)) {
     // Can only move diagonally "forward"
     if (selectedChecker[0] - target[0] === 0) return false;
     if (selectedChecker[1] - target[1] === 0) return false;
@@ -157,12 +160,37 @@ export function calcNewBoard(
   return newBoard;
 }
 
+export function gameOver(board: BoardLayout, turn: boolean) {
+  const nextPlayer = turn ? blueChecker : redChecker;
+
+  for (let y = 0; y < board.length; y++) {
+    for (let x = 0; x < board[y].length; x++) {
+      if (board[y][x] === nextPlayer) {
+        if (
+          canMove([y, x], [y + 1, x + 1], board, false) ||
+          canMove([y, x], [y + 1, x - 1], board, false) ||
+          canMove([y, x], [y - 1, x + 1], board, false) ||
+          canMove([y, x], [y - 1, x - 1], board, false) ||
+          canMove([y, x], [y + 2, x + 2], board, false) ||
+          canMove([y, x], [y + 2, x - 2], board, false) ||
+          canMove([y, x], [y - 2, x + 2], board, false) ||
+          canMove([y, x], [y - 2, x - 2], board, false)
+        ) {
+          return false;
+        }
+      }
+    }
+  }
+  return true;
+}
+
 export function useBoardState() {
   const [board, setBoard] = useState<BoardLayout>(initialBoard);
   const [selectedChecker, setSelectedCheckerState] =
     useState<Coordinates | null>(null);
-  const [turn, setTurn] = useState(true);
+  const [turn, setTurn] = useState(false);
   const [secondTurn, setSecondTurn] = useState(false);
+  const [isGameOver, setGameOver] = useState(false);
 
   function moveAction(target: Coordinates): void {
     if (!selectedChecker) return;
@@ -170,21 +198,26 @@ export function useBoardState() {
     const res = checkBaseRules(selectedChecker, target, board, turn);
     if (!res) return;
 
-    const move = canMove(selectedChecker, target, board);
+    const move = canMove(selectedChecker, target, board, secondTurn);
     if (!move) return;
-
+    // update board (SIDE EFFECT ???)
     setBoard((board) => calcNewBoard(selectedChecker, target, board));
+    // Improve ? Cannot use board state as callback does not update useState before repeatingTurn is defined
+    const newBoard = calcNewBoard(selectedChecker, target, board);
 
-    const newBoard = calcNewBoard(selectedChecker, target, board)
-
-    const secondTurn = checkForSecondTurn(target, newBoard, selectedChecker);
-    if (secondTurn) {
+    const repeatingTurn = checkForSecondTurn(target, newBoard, selectedChecker);
+    if (repeatingTurn) {
       setSecondTurn(true);
       setSelectedCheckerState(target);
       return;
     }
 
     setSecondTurn(false);
+
+    if (gameOver(newBoard, turn)) {
+      setGameOver(true);
+      return;
+    }
     setTurn(!turn);
     return;
   }
@@ -203,5 +236,6 @@ export function useBoardState() {
     setSelectedChecker,
     turn,
     setTurn,
+    isGameOver,
   };
 }

@@ -4,5 +4,5 @@ import {expect, test} from "vitest";
 
 test('render app', () => {
     render(<App/>)
-    expect(screen.getByText(/Message board: Let the game begin/i)).toBeInTheDocument()
+    expect(screen.getByText(/REACT Checkers/i)).toBeInTheDocument()
 })
