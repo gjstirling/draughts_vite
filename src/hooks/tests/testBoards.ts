@@ -1,5 +1,16 @@
 type BoardLayout = (string | null)[][];
 
+export const emptyBoard: BoardLayout = [
+  [null, null, null, null, null, null, null, null],
+  [null, null, null, null, null, null, null, null],
+  [null, null, null, null, null, null, null, null],
+  [null, null, null, null, null, null, null, null],
+  [null, null, null, null, null, null, null, null],
+  [null, null, null, null, null, null, null, null],
+  [null, null, null, null, null, null, null, null],
+  [null, null, null, null, null, null, null, null],
+];
+
 export const testBoard: BoardLayout = [
     [null, null, null, null, null, null, null, null],
     [null, null, "red", null, null, null, null, null],
@@ -11,7 +22,7 @@ export const testBoard: BoardLayout = [
     [null, null, null, null, null, null, null, null],
   ];
 
-export const testBoardWithKing: BoardLayout = [
+export const redKingTakesBlueChecker: BoardLayout = [
     [null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
@@ -22,29 +33,7 @@ export const testBoardWithKing: BoardLayout = [
     [null, null, null, null, null, null, null, null],
   ];
 
-export const testBoardForSecondTurn: BoardLayout = [
-    [null, null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null, null],
-    [null, "blue", null, "blue", null, null, null, null],
-    [null, null, "red", null, null, null, null, null],
-    [null, null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null, null],
-  ];
-
-  export const errorBoard: BoardLayout = [
-    [null, null, null, "blue", null, null, null, null],
-    ["blue", null, "blue", null, null, null, null, null],
-    [null, "red", null, null, null, null, null, null],
-    [null, null, null, null, "blue", null, null, null],
-    [null, null, null, "blue", null, "blue", null, null],
-    [null, null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null, null],
-    [null, null, null, null, null, null, null, null],
-  ];
-
-  export const kingNextToChecker: BoardLayout = [
+export const blueKingNextToBlueChecker: BoardLayout = [
     [null, null, null, "blue", null, null, null, null],
     ["blue", null, "blue", null, null, null, null, null],
     [null, "red", null, null, null, null, null, null],
@@ -54,3 +43,4 @@ export const testBoardForSecondTurn: BoardLayout = [
     [null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null],
   ];
+

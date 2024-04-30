@@ -1,7 +1,12 @@
 import { describe, expect, test } from "vitest";
 import {checkBaseRules, initialBoard, calcNewBoard, canMove, checkForSecondTurn} from "../useBoardState";
-import { testBoard, testBoardWithKing, testBoardForSecondTurn, errorBoard, kingNextToChecker } from "./testBoards";
+import {emptyBoard} from "./testBoards";
 
+type BoardLayout = (string | null)[][];
+const redChecker = "red"
+const redKing = "RED"
+const blueChecker = "blue"
+const blueKing = "BLUE"
 
 describe("checkBaseRules: ", () => {
     // true cases:
@@ -18,19 +23,50 @@ describe("checkBaseRules: ", () => {
     }); 
 
     test('Returns true when red checker is selected, target is two moves away and there is a blue checker in path', () => {
-        const result = checkBaseRules([4,1], [2,3], testBoard, true)
+        const board = [
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, "blue", null, null, null, null, null],
+            [null, "red", null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+          ];
+
+        const result = checkBaseRules([4,1], [2,3], board, true)
         
         expect(result).toBe(true)
     }); 
 
     test('Returns true when blue checker is selected, target is two moves away and there is a blue checker in path', () => {
-        const result = checkBaseRules([3,2], [5,0], testBoard, false)
+        const board = [
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, "blue", null, null, null, null, null],
+            [null, "red", null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+          ];
+        const result = checkBaseRules([3,2], [5,0], board, false)
         
         expect(result).toBe(true)
     }); 
 
     test('Returns true when moving a king backwards', () => {
-        const result = checkBaseRules([4,1], [5,0], testBoardWithKing, true)
+        const board = [
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, "blue", null, null, null, null, null],
+            [null, "RED", null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+          ];
+        const result = checkBaseRules([4,1], [5,0], board, true)
         
         expect(result).toBe(true)
     });
@@ -49,7 +85,7 @@ describe("checkBaseRules: ", () => {
     }); 
 
     test('Returns false when there is no checker on selected square', () => {
-        const result = checkBaseRules([0,0], [1,2], testBoard, true)
+        const result = checkBaseRules([0,0], [1,2], initialBoard, true)
         
         expect(result).toBe(false)
     }); 
@@ -67,7 +103,7 @@ describe("checkBaseRules: ", () => {
     });
 
     test('Returns false when trying to move backwards', () => {
-        const result = checkBaseRules([4,1], [5,0], testBoard, true)
+        const result = checkBaseRules([4,1], [5,0], initialBoard, true)
         
         expect(result).toBe(false)
     });
@@ -75,31 +111,71 @@ describe("checkBaseRules: ", () => {
 
 describe("canMove: ", () => {
     test('Returns true when red checker is moving one diagonal square away', () => {
-        const result= canMove([1,2], [0,1], testBoard)
+        const result= canMove([5,0], [4,1], initialBoard)
 
         expect(result).toBe(true)
     }); 
 
     test('Returns false when square is occupied by a checker', () => {
-        const result= canMove([4,1], [3,2], testBoard)
+        const board = [
+            [null, null, null, null, null, null, null, null],
+            [null, null, "red", null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, "blue", null, null, null, null, null],
+            [null, "red", null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+          ]
+        const result= canMove([4,1], [3,2], board)
 
         expect(result).toBe(false)
     });
 
     test('Returns true when making a double move with checker inbetween', () => {
-        const result= canMove([4,1], [2,3], testBoard)
+        const board = [
+            [null, null, null, null, null, null, null, null],
+            [null, null, "red", null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, "blue", null, null, null, null, null],
+            [null, "red", null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+          ]
+        const result= canMove([4,1], [2,3], board)
 
         expect(result).toBe(true)
     });
 
     test('Returns false when trying to jump two spaces', () => {
-        const result= canMove([3,2], [5,4], testBoard)
+        const board = [
+            [null, null, null, null, null, null, null, null],
+            [null, null, "red", null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, "blue", null, null, null, null, null],
+            [null, "red", null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+          ]
+        const result= canMove([3,2], [5,4], board)
 
         expect(result).toBe(false)
     });
 
     test('Returns false when king tries to move over another blue checker', () => {
-        const result = canMove([3,4], [5,2], kingNextToChecker)
+        const board = [
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, "BLUE", null, null, null],
+            [null, null, null, "blue", null, "blue", null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+          ]
+        const result = canMove([3,4], [5,2], board)
         
         expect(result).toBe(false)
     });
@@ -109,52 +185,193 @@ describe("calcNewBoard: ", () => {
     test('Can return an updated board', () => {
         const result = calcNewBoard([5,2], [4,3], initialBoard)
         
-        expect(result[4][3]).toBe("red")
+        expect(result[4][3]).toBe(redChecker)
     }); 
 
     test('Can return an updated board when a checker has been taken', () => {
-        const result = calcNewBoard([4,1], [2,3], testBoard)
+        const board = [
+            [null, null, null, null, null, null, null, null],
+            [null, null, "red", null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, "blue", null, null, null, null, null],
+            [null, "red", null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+          ]
+        const result = calcNewBoard([4,1], [2,3], board)
         
         expect(result[3][2]).toBe(null)
     }); 
 });
 
+// checkForSecondTurn(
+//     target: Coordinates,
+//     board: BoardLayout,
+//     oldPosition: Coordinates
+//   )
 describe("checkForSecondTurn", () => {
-    test('returns false if last turn was only a single move', () => {
-        const result = checkForSecondTurn([4,1], initialBoard, true, [3,0])
+    test('returns false if last turn was a single diagonal move', () => {
+        const act = checkForSecondTurn([4,1], emptyBoard, [3,0])
         
-        expect(result).toBe(false)
+        expect(act).toBe(false)
     }); 
 
-    test('returns false if target is in first two rows of board', () => {
-        const result = checkForSecondTurn([1,1], initialBoard, true, [0,0])
+    test('returns false if checker has landed on bottom or top two rows of board', () => {
+        const bottomOfBoard = checkForSecondTurn([6,1], emptyBoard, [0,0])
+        const topOfBoard = checkForSecondTurn([2,1], emptyBoard, [0,0])
         
-        expect(result).toBe(false)
+        expect(bottomOfBoard).toBe(false)
+        expect(topOfBoard).toBe(false)
+    }); 
+// CHECKER Behaviour assetions
+    test('returns true if blue checker lands within range of a red checker and can take it', () => {
+        const board: BoardLayout = [
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, "blue", null, null, null],
+            [null, null, null, "red", null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+          ];
+        const act = checkForSecondTurn([5,4], board, [3,2])
+               
+        expect(act).toBe(true)
     }); 
 
-    test('returns true if target is in last two rows of board', () => {
-        const result = checkForSecondTurn([6,1], initialBoard, false, [0,0])
-        
-        expect(result).toBe(false)
-    });
-
-    test('returns true if checker has an opposing checker NE', () => {
-        const result = checkForSecondTurn([3,2], testBoardForSecondTurn, true, [5,0])
-        
-        expect(result).toBe(true)
-    });
-
-    test('returns false if target is in first two rows of board', () => {
-        const result = checkForSecondTurn([2,1], errorBoard, true, [4,3])
-        
-        expect(result).toBe(false)
+    test('returns FALSE if blue checker lands within range of a red checker but target is blocked', () => {
+        const board: BoardLayout = [
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, "blue", null, null, null],
+            [null, null, null, "red", null, null, null, null],
+            [null, null, "red", null, null, null, null, null],
+          ];
+        const act = checkForSecondTurn([5,4], board, [3,2])
+               
+        expect(act).toBe(false)
     }); 
 
-    test('returns false when last move has taken a checker and only two of the same colour are within range', () => {
-        const result = checkForSecondTurn([5,2], errorBoard, false, [1,6])
-        
-        expect(result).toBe(false)
+    test('returns false if blue checker lands and has a red checker behind it', () => {
+        const board: BoardLayout = [
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, "red", null, null],
+            [null, null, null, null, "blue", null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+          ];
+        const act = checkForSecondTurn([5,4], board, [3,2])
+               
+        expect(act).toBe(false)
     });
+
+    test('returns true if red checker lands within range of a blue checker and can take it', () => {
+        const board: BoardLayout = [
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, "blue", null, null],
+            [null, null, null, null, "red", null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+          ];
+
+        const bottomOfBoard = checkForSecondTurn([5,4], board, [7,2])
+               
+        expect(bottomOfBoard).toBe(true)
+    }); 
+
+    test('returns true if red checker lands within range of a blue checker and can take it', () => {
+        const board: BoardLayout = [
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, "blue", null],
+            [null, null, null, null, null, "blue", null, null],
+            [null, null, null, null, "red", null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+          ];
+        const act = checkForSecondTurn([5,4], board, [7,2])
+               
+        expect(act).toBe(false)
+    });
+
+    test('returns false if red checker lands and has a red checker behind it', () => {
+        const board: BoardLayout = [
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, "red", null, null, null, null],
+            [null, null, null, null, "blue", null, null, null],
+            [null, null, null, null, null, null, null, null],
+            [null, null, null, null, null, null, null, null],
+          ];
+        const act = checkForSecondTurn([6,1], board, [4,3])
+               
+        expect(act).toBe(false)
+    });
+
+// King Behaviour assetions
+test('returns true if blue checker lands within range of a red checker and can take it', () => {
+    const board: BoardLayout = [
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, blueChecker, null, null, null],
+        [null, null, null, redKing, null, null, null, null],
+        [null, null, null, null, null, null, null, null],
+      ];
+    const act = checkForSecondTurn([5,4], board, [3,2])
+           
+    expect(act).toBe(true)
+}); 
+
+test('returns TRUE if blue checker lands and has a red checker behind it', () => {
+    const board: BoardLayout = [
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, "red", null, null],
+        [null, null, null, null, "BLUE", null, null, null],
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null],
+      ];
+    const act = checkForSecondTurn([5,4], board, [3,2])
+           
+    expect(act).toBe(true)
+});
+
+test('returns FALSE if blue king lands and has a red checker behind it but target is blocked', () => {
+    const board: BoardLayout = [
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, redChecker, null],
+        [null, null, null, null, null, redChecker, null, null],
+        [null, null, null, null, blueKing, null, null, null],
+        [null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null],
+      ];
+    const act = checkForSecondTurn([5,4], board, [3,2])
+           
+    expect(act).toBe(false)
+});
+
+
 
 });
 
