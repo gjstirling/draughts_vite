@@ -8,14 +8,14 @@ const blueChecker = "blue";
 const blueKing = "BLUE";
 
 export const initialBoard: BoardLayout = [
+  [null, "blue", null, "blue", null, "blue", null, "blue"],
+  ["blue", null, "blue", null, "blue", null, "blue", null],
+  [null, "blue", null, "blue", null, "blue", null, "blue"],
   [null, null, null, null, null, null, null, null],
   [null, null, null, null, null, null, null, null],
-  [null, null, null, null, null, null, null, null],
-  [null, null, null, null, null, null, null, null],
-  [null, null, null, blueChecker, null, null, null, null],
-  [null, null, null, null, null, null, null, null],
-  [null, blueChecker, null, null, null, null, null, null],
-  [redChecker, null, null, null, null, null, null, null],
+  ["red", null, "red", null, "red", null, "red", null],
+  [null, "red", null, "red", null, "red", null, "red"],
+  ["red", null, "red", null, "red", null, "red", null],
 ];
 
 export function canMove(
@@ -30,7 +30,7 @@ export function canMove(
   const deltaX = targetX - checkerX;
 
   if (targetY < 0 || targetY > board.length - 1) return false;
-  if (target[1] < 0 || target[1] > board.length - 1) return false;
+  if (targetX < 0 || targetX > board.length - 1) return false;
   if (board[targetY][targetX] !== null) return false;
 
   const isSingleMove = Math.abs(deltaY) === 1 && Math.abs(deltaX) === 1;
@@ -118,7 +118,6 @@ export function checkBaseRules(
 
   const isKing = (str: string) => str === str.toUpperCase();
   if (!isKing(checker)) {
-    // Can only move diagonally "forward"
     if (selectedChecker[0] - target[0] === 0) return false;
     if (selectedChecker[1] - target[1] === 0) return false;
     if (selectedChecker[0] < target[0] && turn) return false;
@@ -126,6 +125,18 @@ export function checkBaseRules(
   }
 
   return true;
+}
+function checkAllSpaces(y: number, x: number, board: BoardLayout) {
+  return (
+    canMove([y, x], [y + 1, x + 1], board, false) ||
+    canMove([y, x], [y + 1, x - 1], board, false) ||
+    canMove([y, x], [y - 1, x + 1], board, false) || 
+    canMove([y, x], [y - 1, x - 1], board, false) ||
+    canMove([y, x], [y + 2, x + 2], board, false) ||
+    canMove([y, x], [y + 2, x - 2], board, false) ||
+    canMove([y, x], [y - 2, x + 2], board, false) ||
+    canMove([y, x], [y - 2, x - 2], board, false)
+  );
 }
 
 export function calcNewBoard(
@@ -161,23 +172,15 @@ export function calcNewBoard(
 }
 
 export function gameOver(board: BoardLayout, turn: boolean) {
-  const nextPlayer = turn ? blueChecker : redChecker;
+  const nextChecker = turn ? blueChecker : redChecker;
+  const nextKing = turn ? blueKing : redKing;
 
   for (let y = 0; y < board.length; y++) {
     for (let x = 0; x < board[y].length; x++) {
-      if (board[y][x] === nextPlayer) {
-        if (
-          canMove([y, x], [y + 1, x + 1], board, false) ||
-          canMove([y, x], [y + 1, x - 1], board, false) ||
-          canMove([y, x], [y - 1, x + 1], board, false) ||
-          canMove([y, x], [y - 1, x - 1], board, false) ||
-          canMove([y, x], [y + 2, x + 2], board, false) ||
-          canMove([y, x], [y + 2, x - 2], board, false) ||
-          canMove([y, x], [y - 2, x + 2], board, false) ||
-          canMove([y, x], [y - 2, x - 2], board, false)
-        ) {
-          return false;
-        }
+      const isOpponent =
+        board[y][x] === nextChecker || board[y][x] === nextKing;
+      if (isOpponent && checkAllSpaces(y, x, board)) {
+        return false;
       }
     }
   }
@@ -188,8 +191,8 @@ export function useBoardState() {
   const [board, setBoard] = useState<BoardLayout>(initialBoard);
   const [selectedChecker, setSelectedCheckerState] =
     useState<Coordinates | null>(null);
-  const [turn, setTurn] = useState(false);
-  const [secondTurn, setSecondTurn] = useState(false);
+  const [turn, setTurn] = useState(true);
+  const [turnLock, setTurnLock] = useState(false);
   const [isGameOver, setGameOver] = useState(false);
 
   function moveAction(target: Coordinates): void {
@@ -198,32 +201,30 @@ export function useBoardState() {
     const res = checkBaseRules(selectedChecker, target, board, turn);
     if (!res) return;
 
-    const move = canMove(selectedChecker, target, board, secondTurn);
+    const move = canMove(selectedChecker, target, board, turnLock);
+
     if (!move) return;
-    // update board (SIDE EFFECT ???)
-    setBoard((board) => calcNewBoard(selectedChecker, target, board));
-    // Improve ? Cannot use board state as callback does not update useState before repeatingTurn is defined
     const newBoard = calcNewBoard(selectedChecker, target, board);
 
     const repeatingTurn = checkForSecondTurn(target, newBoard, selectedChecker);
+    setBoard(newBoard);
     if (repeatingTurn) {
-      setSecondTurn(true);
+      setTurnLock(true);
       setSelectedCheckerState(target);
       return;
     }
 
-    setSecondTurn(false);
-
+    setTurnLock(false);
     if (gameOver(newBoard, turn)) {
       setGameOver(true);
       return;
     }
-    setTurn(!turn);
+    setTurn((turn) => !turn);
     return;
   }
 
   function setSelectedChecker(coordinates: Coordinates) {
-    if (secondTurn) {
+    if (turnLock) {
       return;
     }
     setSelectedCheckerState(coordinates);

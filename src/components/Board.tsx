@@ -11,19 +11,21 @@ function Board() {
     isGameOver,
   } = useBoardState();
 
-  if(isGameOver)
-    { return (
-      <div>
-        <h1 className="heading">
-          The {turn ? "Red" : "Blue"} player has won the game !!!!
-        </h1>
-      </div>
-    )}
+  const gameFinish = isGameOver ? (
+    <div>
+      <h1 className="heading">
+        The {turn ? "Red" : "Blue"} player has won the game !!!!
+      </h1>
+    </div>
+  ) : (
+    <div></div>
+  );
 
   return (
     <>
+      {}
       <div>
-        <h1 className="heading">REACT Checkers</h1>
+        <h1 className="heading">REACT Checkers {gameFinish}</h1>
         <h3 className={"heading"}> {turn ? "red" : "blue"} checkers turn</h3>
       </div>
       <div>
