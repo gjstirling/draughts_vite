@@ -6,7 +6,12 @@ This is a checkers app built using React, Vite and Typescript. Two players share
 - Checkers can only jump one diagonal.
 - Checkers can take opposing checkers by jumping over them assuming the target is empty (no checker on square).
 - Kings are created when a checker makes it to the other end of the board, They can move in any direction.
-- When a checker/king takes another piece and lands within range to take another checker then the player must take an extra move to take it. 
+- When a checker/king takes another piece and lands within range to take another checker then the player must take an extra move to take it.
+
+<div style="text-align:center">
+  <img src="https://github.com/gjstirling/draughts_vite/blob/main/public/checkers.jpeg" alt="Checkers Image">
+</div>
+
 
 ## Installation and Setup Instructions
 
