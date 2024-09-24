@@ -35,6 +35,15 @@ To Visit App:
 
 `localhost:3000`
 
+### Docker 
+
+If you have docker installed you can clone the repo and run it using the following:
+
+Build: `docker build -t draughts-app`
+
+Run: `docker run -p 3000:3000 draughts-app`
+
+
 ## Learning/Reflections: 
 **Keep UI and State Separate**: One fundamental principle I embraced was the separation of concerns between UI rendering and state management. By encapsulating the board's state within the useBoardState hook, I ensured that the UI components remained focused solely on rendering. This adherence to the single responsibility principle not only simplified the UI but also facilitated easier management and updates of the board's state within the dedicated hook.
 
